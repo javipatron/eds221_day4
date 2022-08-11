@@ -1,0 +1,115 @@
+---
+title: "da4-morning"
+format: html
+editor: visual
+---
+Add the libraries
+```{r}
+library(tidyverse)
+```
+
+Questions:
+Why do you need a `seq_along`? dont the for explains that?
+
+```{r}
+quarter_splits <- c(1.0, 1.1, 1.2, 1.1, 1.4, 1.5, 1.6, 1.4)
+
+for(i in quarter_splits) {
+  half_time <- quarter_splits[i] + quarter_splits[i+1]
+  print(half_time)
+}
+
+for(i in seq_along(quarter_splits)) {
+  half_time <- quarter_splits[i] + quarter_splits[i+1]
+  print(half_time)
+}
+
+```
+
+
+##Intro to Functions
+### Make a funtion to dougle the user input
+
+```{r}
+
+double_this <- function(my_value) {
+  print(2*my_value)
+}
+
+double_this(200)
+
+double_this(c(1,2,100,125,175))
+```
+
+
+#### Write a function that asks a user `name` & `age`, and returns an exlamation, like "I´m [NAME], and I am [AGE] years old
+
+```{r}
+
+age <- function(name,age) {
+  print(paste("I am,", name, "and I am", age, "years old"))
+}
+
+age(age= 29, name = "Javier")
+age( "Javier" , 29)
+```
+
+### Make a function that has conditionals
+
+```{r}
+
+convert_animal_age <- function(x,y) {
+  if (x == "dog") {
+    print(paste("Your dog is", y*7, "human years old"))
+  }
+  else if (x == "goat") {
+    print(paste("Your goat is", y*4.7, "human years old"))
+  }
+  else{
+    print("We dont have the convertion data for that animal")
+  }
+}
+convert_animal_age("ele",5)
+```
+
+Create a Data.Frame and play with function
+```{r}
+
+dog_choice <- tribble(
+  ~dog_name, ~food,
+  "Khora", "everything",
+  "Teddy", "salmon",
+  "Waffle", "pancakes",
+  "Banjo", "chicken",
+)
+
+
+dog_menu <- function(name) {
+  my_subset <- filter(dog_choice, dog_name == name)
+  print(paste("My name is", my_subset$dog_name, "and my favorite food is", my_subset$food))
+}
+
+dog_menu("Waffle")
+
+```
+
+### Function meets for loops
+
+```{r}
+#Apply a mean over specific columns within a data frames
+
+means_over_columns <- function(df) {
+  for (i in seq_along(df)) {
+    col_mean <- mean(df[[i]], na.rm = TRUE)
+    col_name <- colnames(df[i])
+    print(paste("The mean value of", col_name, "is", col_mean))
+  }
+}
+
+means_over_columns(mtcars)
+```
+
+
+
+
+
