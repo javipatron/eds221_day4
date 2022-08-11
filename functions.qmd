@@ -111,5 +111,175 @@ means_over_columns(mtcars)
 
 
 
+### Interation in matrix
+
+```{r}
+x <- c(1,2,3,4)
+y <- c(7,10,25)
+
+fruit_out <- matrix(nrow = length(y), ncol = length(x))
+
+for (i in seq_along(x)) {
+  for (j in seq_along(y)) {
+    total_cost <- y[j] * x[i]
+    fruit_out[j, i] <- total_cost
+  }
+}
+
+fruit_out
+```
+
+
+#### Try your own
+
+```{r}
+
+moods = c("crazy","cool","happy")
+characters = c("teacher","student","surfer","roomie")
+
+palette <- matrix(nrow = length(characters), ncol = length(moods))
+
+for (i in seq_along(characters)) {
+  for (j in seq_along(moods)) {
+    mix <- paste(characters[i] , moods[j])
+    palette[i,j] <- mix
+  }
+}
+palette
+
+```
+
+### Logistic Growth
+
+#### Modelng a population over time and varying growth rate
+
+```{r}
+# crate a function with a shortcut: MAC cmd + option + x
+
+function_example <- function(x, ab) {
+  x + 100 * ab
+}
+```
+
+
+### Create the Logistic Growth Function
+```{r}
+logistic_growth <- function(k, n0, r, time) {
+  k / (1 + ((k -n0) / n0) * exp (-r * time))
+}
+
+# Always test your functions, TEST IT!
+logistic_growth(1,2,3,4)
+```
+
+```{r}
+time_vec <- seq(0,35,by = 0.1)
+head(time_vec)
+
+pop_35 <- logistic_growth(n0 = 100, k = 8000, r = 0.5, time = time_vec)
+
+pop_time35_df <- data.frame(time_vec, pop_35)
+
+pop_time35_df$new <- c(1:length(pop_35))
+
+```
+### Graph that table
+
+geom_jitter(aes(color = daily_air_temp_mean_c), show.legend = FALSE) +
+  scale_color_gradient(low = "blue", high = "orange")
+```{r}
+ggplot(data = pop_time35_df, aes(x=time_vec, y= pop_35)) + 
+  geom_jitter(aes(color= new)) +
+  scale_color_gradient(low="blue", high = "orange")
+
+```
+
+```{r}
+pop_35_vec <- vector(mode = "numeric", length = length(time_vec))
+
+
+for (i in seq_along(time_vec)) {
+  population <- logistic_growth(n0=100, k = 6000, r = 0.27, time = time_vec[i])
+  pop_35_vec[i] <- population
+}
+
+```
+
+
+### Now extend this to multiple growth rates
+
+```{r}
+r_seq <- seq(from = 0.2, to = 0.4, by= 0.01)
+class(r_seq)
+```
+
+
+```{r}
+
+out_matrix <- matrix(nrow = length(time_vec), ncol = length(r_seq))
+
+for (i in seq_along(r_seq)) {
+  for (j in seq_along(time_vec)) {
+    pop <- logistic_growth(n0 = 100, k = 6000, r=r_seq[i], time = time_vec[j])
+    out_matrix[j,i] <- pop
+  }
+}
+```
+
+### Now some wrangling
+
+```{r}
+logistic_df <- data.frame(out_matrix, time = time_vec)
+```
+
+### update the column names
+
+```{r}
+colnames(logistic_df) <- c(paste0("gr_", r_seq), "time")
+```
+
+### Create pivot longer tables and data frames
+
+```{r}
+logistic_df_long <- logistic_df |> 
+  pivot_longer(cols = -time, values_to = "population",names_to = "growth_rate")
+
+
+ggplot(logistic_df_long, aes(x=time, y = population)) + 
+  geom_line(aes(color = growth_rate))
+
+```
+
+
+### Add a function to have error messages
+
+Use `warning` to add a warning
+Use `alert` to add a alert
+
+$$p = 0.3\rho*A*v^3$$
+rho: air density (kg / m^3)
+A: area covered by turbine (square meters)
+v: wind velocity (m/s)
+
+```{r}
+calc_windpower <- function(rho, radius, windspeed) {
+  
+  if (windspeed > 130) {
+    print("FAST")
+  }
+  else if (rho > 1.225) {
+    warning("That air density is supicious.")
+  }
+  if (radius < 0)
+    stop("Rotor radius must be a positive value (meters) ")
+  0.3*rho*pi*(radius^2)*(windspeed^3)
+}
+```
+
+### Check your function
+
+```{r}
+calc_windpower(1,2,3)
+```
 
 
